@@ -31,11 +31,11 @@ Uses [matplotlib](https://matplotlib.org/)  for ploting accuracy and losses.
 
 * after 20 epochs 
 
-* 91.65%
+* 88.67%
 
 ### Test accuracy 
 
-* 89.81%
+* 83.98%
 
 ## Usage
 
