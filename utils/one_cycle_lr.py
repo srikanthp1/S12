@@ -5,7 +5,7 @@ def get_onecycle_scheduler(optimizer,mx_lr,train_loader,num_epochs):
     return optim.lr_scheduler.OneCycleLR(
     optimizer,
     max_lr=mx_lr,
-    epochs=24,
+    epochs=num_epochs,
     steps_per_epoch=len(train_loader),
     pct_start=5/num_epochs,
     div_factor=100,

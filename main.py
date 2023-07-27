@@ -13,27 +13,17 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from utils.gradcam import generate_gradcam, plot_gradcam_images
 
 
-from utils.utils import get_incorrrect_predictions, plot_incorrect_predictions
+from utils.utils import get_incorrrect_predictions, plot_incorrect_predictions, wrong_predictions
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print("CUDA Available?", cuda)
+
 
 # let us consider this as classes though they are not 
-class_map = {
-    'ZERO': 0,
-    'ONE': 1,
-    'TWO': 2,
-    'THREE': 3,
-    'FOUR': 4,
-    'FIVE': 5,
-    'SIX': 6,
-    'SEVEN': 7,
-    'EIGHT': 8,
-    'NINE': 9
-}
+
+class_map = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
 from utils.dataloader import get_dataloader
 from utils.utils import return_dataset_images
@@ -44,6 +34,8 @@ return_dataset_images(train_loader, 12)
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
+
+print("CUDA Available?", use_cuda)
 
 model = ResNet18().to(device)
 
@@ -120,6 +112,7 @@ def test(model, device, test_loader):
         100. * correct / len(test_loader.dataset)))
     
     test_acc.append(100. * correct / len(test_loader.dataset))  
+    return test_loss
 
 def draw_graphs():
     fig, axs = plt.subplots(2,2,figsize=(15,10))
@@ -135,26 +128,44 @@ def draw_graphs():
 
 model_summary(model, (3,32,32))
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.001,
+# scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3,verbose=True,mode='max')
+from utils.find_LR import find_lr
+from utils.one_cycle_lr import get_onecycle_scheduler
+
+optimizer = optim.SGD(model.parameters(), lr=0.1,
                       momentum=0.9, weight_decay=5e-4)
-scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3,verbose=True,mode='max')
+criterion = nn.CrossEntropyLoss()
+
+max_lr = find_lr(model,optimizer, criterion, device,train_loader)
+if isinstance(max_lr, float):
+  max_lr = max_lr
+else:
+  max_lr = max_lr[1]
+num_epochs = 20
+
+scheduler = get_onecycle_scheduler(optimizer,max_lr,train_loader,num_epochs)
 
 batch_size = 512
-num_epochs = 20
+
 
 for epoch in range(1, num_epochs+1):
   # print(f'Epoch {epoch}')
   train(model, device, train_loader, optimizer, criterion,scheduler)
-  test(model, device, test_loader)
+  test_loss=test(model, device, test_loader)
+#   scheduler.step(test_loss)
 
 draw_graphs()
 
 
-incorrect = get_incorrrect_predictions(model, test_loader, device)
-plot_incorrect_predictions(incorrect, class_map, count=20)
+# incorrect = get_incorrrect_predictions(model, test_loader, device)
+# plot_incorrect_predictions(incorrect, class_map, count=20)
+
+norm_mean=(0.4914, 0.4822, 0.4465) 
+norm_std=(0.2023, 0.1994, 0.2010)
+misclassified_images = wrong_predictions(model,test_loader, norm_mean, norm_std, class_map, device)
+     
 
 target_layers = ["layer1","layer2","layer3","layer4"]
-gradcam_output, probs, predicted_classes = generate_gradcam(incorrect[:20], model, target_layers,device)
+gradcam_output, probs, predicted_classes = generate_gradcam(misclassified_images[:20], model, target_layers,device)
 
-plot_gradcam_images(gradcam_output, target_layers, class_map.keys(), (3, 32, 32),predicted_classes, incorrect[:20])
+plot_gradcam_images(gradcam_output, target_layers, class_map, (3, 32, 32),predicted_classes, misclassified_images[:20])
