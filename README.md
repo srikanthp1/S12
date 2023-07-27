@@ -10,6 +10,9 @@ Uses [matplotlib](https://matplotlib.org/)  for ploting accuracy and losses.
  * we are training our custom resnet model on CIFAR dataset. 
  * we are using a custom convolutional neural network (CNN) architectures which includes skip connections etc
  * Implemented in pytorch 
+ * in this repo, i am going with reduceplatuea as onecycle was explored last time
+ * and using gradcan for failed cases to visualize why model is not performing 
+
 
 ## About
 
@@ -18,14 +21,15 @@ Uses [matplotlib](https://matplotlib.org/)  for ploting accuracy and losses.
 * dataloader.py contains dataloaders which downloads and gives dataloaders. 
 * find_LR.py contains a function which fetches max_lr we can use for onecyclelr
 * one_cycle_lr returns us one_cycle scheduler
-* model.py has model classes and other related functions 
+* model.py has model classes
 * utils.py has some graph functions and others 
+* everything is moved to main.py. so running main.py should be enough to get training started 
 
 ## Results 
 
 ### Train accuracy 
 
-* after 24 epochs 
+* after 20 epochs 
 
 * 91.65%
 
@@ -36,15 +40,15 @@ Uses [matplotlib](https://matplotlib.org/)  for ploting accuracy and losses.
 ## Usage
 
 ```bash
-git clone https://github.com/srikanthp1/S10.git
+git clone https://github.com/srikanthp1/S11.git
 ```
-* run cell by cell to download, visualize data and train model
+* python main.py
 
 
 ## Model details
 
 ```python
-model = Net().to(device)
+model = model().to(device)
 summary(model, input_size=(3, 32, 32))
 ```
 
@@ -53,52 +57,71 @@ summary(model, input_size=(3, 32, 32))
         Layer (type)               Output Shape         Param #
 ================================================================
             Conv2d-1           [-1, 64, 32, 32]           1,728
-       BatchNorm2d-2           [-1, 64, 32, 32]             128
-              ReLU-3           [-1, 64, 32, 32]               0
-            Conv2d-4          [-1, 128, 32, 32]          73,728
-         MaxPool2d-5          [-1, 128, 16, 16]               0
-       BatchNorm2d-6          [-1, 128, 16, 16]             256
-              ReLU-7          [-1, 128, 16, 16]               0
-            Conv2d-8          [-1, 128, 16, 16]         147,456
-       BatchNorm2d-9          [-1, 128, 16, 16]             256
-             ReLU-10          [-1, 128, 16, 16]               0
-           Conv2d-11          [-1, 128, 16, 16]         147,456
-      BatchNorm2d-12          [-1, 128, 16, 16]             256
-             ReLU-13          [-1, 128, 16, 16]               0
-           Conv2d-14          [-1, 256, 16, 16]         294,912
-        MaxPool2d-15            [-1, 256, 8, 8]               0
-      BatchNorm2d-16            [-1, 256, 8, 8]             512
-             ReLU-17            [-1, 256, 8, 8]               0
-           Conv2d-18            [-1, 512, 8, 8]       1,179,648
-        MaxPool2d-19            [-1, 512, 4, 4]               0
-      BatchNorm2d-20            [-1, 512, 4, 4]           1,024
-             ReLU-21            [-1, 512, 4, 4]               0
-           Conv2d-22            [-1, 512, 4, 4]       2,359,296
-      BatchNorm2d-23            [-1, 512, 4, 4]           1,024
-             ReLU-24            [-1, 512, 4, 4]               0
-           Conv2d-25            [-1, 512, 4, 4]       2,359,296
-      BatchNorm2d-26            [-1, 512, 4, 4]           1,024
-             ReLU-27            [-1, 512, 4, 4]               0
-        MaxPool2d-28            [-1, 512, 1, 1]               0
-           Linear-29                   [-1, 10]           5,130
+         GroupNorm-2           [-1, 64, 32, 32]             128
+            Conv2d-3           [-1, 64, 32, 32]          36,864
+         GroupNorm-4           [-1, 64, 32, 32]             128
+            Conv2d-5           [-1, 64, 32, 32]          36,864
+         GroupNorm-6           [-1, 64, 32, 32]             128
+        BasicBlock-7           [-1, 64, 32, 32]               0
+            Conv2d-8           [-1, 64, 32, 32]          36,864
+         GroupNorm-9           [-1, 64, 32, 32]             128
+           Conv2d-10           [-1, 64, 32, 32]          36,864
+        GroupNorm-11           [-1, 64, 32, 32]             128
+       BasicBlock-12           [-1, 64, 32, 32]               0
+           Conv2d-13          [-1, 128, 32, 32]          73,728
+        GroupNorm-14          [-1, 128, 32, 32]             256
+           Conv2d-15          [-1, 128, 32, 32]         147,456
+        GroupNorm-16          [-1, 128, 32, 32]             256
+           Conv2d-17          [-1, 128, 32, 32]           8,192
+        GroupNorm-18          [-1, 128, 32, 32]             256
+       BasicBlock-19          [-1, 128, 32, 32]               0
+           Conv2d-20          [-1, 128, 32, 32]         147,456
+        GroupNorm-21          [-1, 128, 32, 32]             256
+           Conv2d-22          [-1, 128, 32, 32]         147,456
+        GroupNorm-23          [-1, 128, 32, 32]             256
+       BasicBlock-24          [-1, 128, 32, 32]               0
+           Conv2d-25          [-1, 256, 16, 16]         294,912
+        GroupNorm-26          [-1, 256, 16, 16]             512
+           Conv2d-27          [-1, 256, 16, 16]         589,824
+        GroupNorm-28          [-1, 256, 16, 16]             512
+           Conv2d-29          [-1, 256, 16, 16]          32,768
+        GroupNorm-30          [-1, 256, 16, 16]             512
+       BasicBlock-31          [-1, 256, 16, 16]               0
+           Conv2d-32          [-1, 256, 16, 16]         589,824
+        GroupNorm-33          [-1, 256, 16, 16]             512
+           Conv2d-34          [-1, 256, 16, 16]         589,824
+        GroupNorm-35          [-1, 256, 16, 16]             512
+       BasicBlock-36          [-1, 256, 16, 16]               0
+           Conv2d-37            [-1, 512, 8, 8]       1,179,648
+        GroupNorm-38            [-1, 512, 8, 8]           1,024
+           Conv2d-39            [-1, 512, 8, 8]       2,359,296
+        GroupNorm-40            [-1, 512, 8, 8]           1,024
+           Conv2d-41            [-1, 512, 8, 8]         131,072
+        GroupNorm-42            [-1, 512, 8, 8]           1,024
+       BasicBlock-43            [-1, 512, 8, 8]               0
+           Conv2d-44            [-1, 512, 8, 8]       2,359,296
+        GroupNorm-45            [-1, 512, 8, 8]           1,024
+           Conv2d-46            [-1, 512, 8, 8]       2,359,296
+        GroupNorm-47            [-1, 512, 8, 8]           1,024
+       BasicBlock-48            [-1, 512, 8, 8]               0
+           Linear-49                   [-1, 10]           5,130
 ================================================================
-Total params: 6,573,130
-Trainable params: 6,573,130
+Total params: 11,173,962
+Trainable params: 11,173,962
 Non-trainable params: 0
 ----------------------------------------------------------------
 Input size (MB): 0.01
-Forward/backward pass size (MB): 6.44
-Params size (MB): 25.07
-Estimated Total Size (MB): 31.53
+Forward/backward pass size (MB): 27.00
+Params size (MB): 42.63
+Estimated Total Size (MB): 69.64
 ----------------------------------------------------------------
 
 ```
 
 ## Analysis 
 
-* Training really slowed down moving towards the target after 5 epochs, guessing the loss is bouncing around in an alley without reaching botton due to high lr. 
-* as expected during annealing stage accuracy really picked up. 
-* skip connections helped work with multiple RFs which helped achieve 90% accuracy. 
+* chose to go with resnet18 considering the complexity of dataset.
+* skip connections helped work with multiple RFs which helped achieve high accuracy. 
 * loss graph would have further reduced had we left it to train
 
 

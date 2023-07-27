@@ -1,7 +1,7 @@
 import torch
 from torchvision import datasets, transforms
 
-from transforms import test_transforms, train_transforms
+from utils.transforms import test_transforms, train_transforms
 
 
 class Cifar10SearchDataset(datasets.CIFAR10):

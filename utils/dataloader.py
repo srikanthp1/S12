@@ -1,5 +1,5 @@
 import torch
-from dataset import get_dataset
+from utils.dataset import get_dataset
 
 batch_size = 512
 
