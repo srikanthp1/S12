@@ -132,7 +132,6 @@ Estimated Total Size (MB): 69.64
 
 * later when did with onecycle it did give better results. assuming it is able to find best valley during the increase lr period. 
 
-```
 
 ## Graphs and Misclassified images 
 
