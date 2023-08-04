@@ -154,6 +154,8 @@ for epoch in range(1, num_epochs+1):
   test_loss=test(model, device, test_loader)
 #   scheduler.step(test_loss)
 
+torch.save(model.state_dict(), 'model.pth')
+
 draw_graphs()
 
 
