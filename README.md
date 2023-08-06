@@ -10,8 +10,8 @@ Uses [matplotlib](https://matplotlib.org/)  for ploting accuracy and losses.
  * we are training our custom resnet model on CIFAR dataset. 
  * we are using a custom convolutional neural network (CNN) architectures which includes skip connections etc
  * Implemented in pytorch 
- * in this repo, i am going with reduceplatuea as onecycle was explored last time
- * and using gradcan for failed cases to visualize why model is not performing 
+ * in this repo, i am exporing pytorch-lightning. by using this model that we train i am going to publish space app.
+ * this repo only does training using pytorch-lightning
 
 
 ## About
@@ -21,28 +21,23 @@ Uses [matplotlib](https://matplotlib.org/)  for ploting accuracy and losses.
 * dataloader.py contains dataloaders which downloads and gives dataloaders. 
 * find_LR.py contains a function which fetches max_lr we can use for onecyclelr
 * one_cycle_lr returns us one_cycle scheduler
-* model.py has model classes
+* model.py has pytorch settings 
 * utils.py has some graph functions and others 
-* everything is moved to main.py. so running main.py should be enough to get training started 
+* notebook has all pytorch_lightning results 
 
 ## Results 
 
-### Train accuracy 
-
-* after 20 epochs 
-
-* 88.67%
 
 ### Test accuracy 
 
-* 83.98%
+* 0.9194999933242798 
 
 ## Usage
 
 ```bash
-git clone https://github.com/srikanthp1/S11.git
+git clone https://github.com/srikanthp1/S12.git
 ```
-* python main.py
+* notebook for pytorch_lightning
 
 
 ## Model details
@@ -120,39 +115,25 @@ Estimated Total Size (MB): 69.64
 
 ## Analysis 
 
-* chose to go with resnet18 considering the complexity of dataset.
-* skip connections helped work with multiple RFs which helped achieve high accuracy. 
-* loss graph would have further reduced had we left it to train
-* observed slight increase in train time nothing is online to back it up
-* started at 27% with an increase in 9% accuracy per epoch 
-* as reducelronplatuea is used, we started at high lr of 0.1 and we saw a dip in accuracy at 0.1 and when reduced we see a steep increase. 
-* the above could be the standard case of finding valley which is wide and bouncing around at high lr and getting closer to target as lr is reduced 
-* but after sometime it saturated. configuring better may have given better results. 
-* once it hit low lr it was barely doing anything. maybe because of initial setting it ended up in a wrong valley. 
-
-* later when did with onecycle it did give better results. assuming it is able to find best valley during the increase lr period. 
-
-
-## Graphs and Misclassified images 
-
-
-* dataset images 
-
-![alt text](https://github.com/srikanthp1/S11/blob/master/images/random_train_images.png)
+* setting was done right as model class can have all extra attributes 
+* accuracy drop is not observed 
+* validation accuracy reached more than 90 percentage 
+* oncecycle is set to end at 50 
+* will use this model to share transformers app in space 
 
 * loss graphs
 
-![alt text](https://github.com/srikanthp1/S11/blob/master/images/train_test_loss.png)
+![alt text](https://github.com/srikanthp1/S12/blob/master/images/loss_acc_graphs.png)
 
 * misclassified 
 
-![alt text](https://github.com/srikanthp1/S11/blob/master/images/misclassification.png)
+![alt text](https://github.com/srikanthp1/S12/blob/master/images/misclassified_images.png)
 
-* steeplr
+* grad cam
 
-![alt text](https://github.com/srikanthp1/S11/blob/master/images/steeplr.png)
+![alt text](https://github.com/srikanthp1/S12/blob/master/images/grad_cam.png)
 
-* gradcamimgs
+* lr change 
 
-![alt text](https://github.com/srikanthp1/S11/blob/master/images/gradcamimgs.png)
+![alt text](https://github.com/srikanthp1/S12/blob/master/images/lr_change.png)
 
